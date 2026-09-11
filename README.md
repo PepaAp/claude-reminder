@@ -1,38 +1,61 @@
 # Claude Reminder
 
-Small ESP32-C3 reminder utility for sending a physical notification when Claude Code needs attention.
+Physical ESP32-C3 notification when Claude Code needs attention.
 
 ## Contents
 
-- `app.py` - installs missing Python dependencies, flashes the ESP32-C3 firmware, and copies the Claude settings and notification hook.
-- `notify.py` - finds the connected ESP32-C3 and sends the trigger byte over serial.
-- `ESP.ino` - Arduino sketch that drives the solenoid on GPIO 4.
-- `firmware.bin` - prebuilt ESP32-C3 firmware image used by `app.py`.
-- `settings.json` - Claude Code hook configuration.
+- `setup.sh` / `setup.ps1` — check for `uv`, create the virtual environment, install dependencies, launch the wizard
+- `setup.py` — interactive Textual wizard for Claude Code hook installation
+- `notify.py` — finds the connected ESP32-C3 and sends a trigger byte over serial
+- `board/` — PlatformIO project for the firmware (solenoid on GPIO 4)
 
 ## Requirements
 
-- Python 3
+- [uv](https://docs.astral.sh/uv/getting-started/installation/)
+- Claude Code
 - ESP32-C3 connected over USB
-- An available `esptool` installation or permission for `app.py` to install it
-- Arduino IDE or Arduino CLI if rebuilding the sketch
+- [PlatformIO Core](https://platformio.org/) for building or flashing firmware
 
-## Usage
+## Setup
 
-Run the setup and firmware tool from this directory:
-
-```powershell
-python app.py
+```bash
+./setup.sh
 ```
 
-The tool detects the ESP32-C3, flashes `firmware.bin`, saves the detected serial port locally, and copies the Claude hook files into `%USERPROFILE%\\.claude`.
-
-The notification hook can also be run directly:
-
 ```powershell
-python notify.py
+.\setup.ps1
 ```
+
+The script checks for `uv`, runs `uv sync`, and opens an interactive terminal wizard.
+
+The wizard shows hook status and offers these actions:
+
+- Install hooks
+- Remove hooks
+- Test notification
+- Quit
+
+Hooks are written to `~/.claude/settings.json` without overwriting your other Claude settings. They call Python from `.venv` and run `notify.py` directly from this repository.
+
+Installed events:
+
+- `Notification` — matcher `permission_prompt|idle_prompt`
+- `PermissionRequest` — empty matcher for immediate notification when Claude asks for permission
+
+## Firmware
+
+Build and flash from the PlatformIO project in `board/` (bootloader, partition table, and app):
+
+```bash
+cd board
+pio run -t upload
+pio device monitor
+```
+
+PlatformIO auto-detects the serial port (Linux/macOS `/dev/...`, Windows `COMx`). Override with `upload_port` / `monitor_port` in `board/platformio.ini` if needed.
+
+Source is `board/src/main.cpp`. Do not flash a lone application `.bin` to offset `0x0` — that overwrites the bootloader.
 
 ## Hardware
 
-The sketch uses GPIO 4 to control the solenoid. Use an appropriate driver circuit and external power supply; do not connect a solenoid directly to an ESP32 GPIO pin.
+The firmware uses GPIO 4 to control the solenoid. Use an appropriate driver circuit and external power supply; do not connect a solenoid directly to an ESP32 GPIO pin.

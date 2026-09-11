@@ -1,5 +1,7 @@
+#include <Arduino.h>
+
 #define SOLENOID_PIN 4
-#define PULSE_DURATION_MS 100  
+#define PULSE_DURATION_MS 100
 
 void setup() {
   Serial.begin(115200);

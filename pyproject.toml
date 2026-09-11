@@ -1,0 +1,10 @@
+[project]
+name = "claude-reminder"
+version = "0.1.0"
+description = "Physical ESP32-C3 notification when Claude Code needs attention"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "pyserial>=3.5",
+    "textual>=3.0.0",
+]
