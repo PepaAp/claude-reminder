@@ -63,5 +63,6 @@ PlatformIO auto-detects the serial port (Linux/macOS `/dev/...`, Windows `COMx`)
 Source is `board/src/main.cpp`. Do not flash a lone application `.bin` to offset `0x0` — that overwrites the bootloader.
 
 ## Hardware
-
-![ESP32-C3 solenoid wiring diagram](imgs/diagram.png)
+<p align="center">
+	<img src="imgs/diagram.png" alt="ESP32-C3 solenoid wiring diagram">
+</p>
