@@ -6,3 +6,4 @@ env/
 .env
 .vscode/
 board/.pio/
+posledni_port.txt

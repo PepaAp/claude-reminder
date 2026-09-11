@@ -21,9 +21,24 @@ def notify_gadget():
         return False
     
     try:
-        with serial.Serial(gadget_com_port, BAUDRATE, timeout=1) as ser:
-            time.sleep(0.05)
+        with serial.Serial(
+            gadget_com_port,
+            BAUDRATE,
+            timeout=0.4,
+            write_timeout=0.5,
+            dsrdtr=False,
+            rtscts=False,
+        ) as ser:
+            time.sleep(0.25)
+            ser.reset_input_buffer()
             ser.write(b"1")
+            response = ser.readline().decode(errors="replace").strip()
+            if response != "TUK":
+                print(
+                    f"ESP32 did not confirm the notification (response: {response!r}).",
+                    file=sys.stderr,
+                )
+                return False
             return True
     except serial.SerialException as e:
         print(f"ESP32 communication error: {e}", file=sys.stderr)

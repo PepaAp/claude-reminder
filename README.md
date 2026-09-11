@@ -42,6 +42,12 @@ Installed events:
 - `Notification` — matcher `permission_prompt|idle_prompt`
 - `PermissionRequest` — empty matcher for immediate notification when Claude asks for permission
 
+## How It Works
+
+1. Claude Code needs attention and triggers the hook.
+2. The hook runs `notify.py`, which sends a signal to the ESP32 over USB.
+3. The ESP32 activates GPIO 4, which switches the transistor and powers the solenoid.
+
 ## Firmware
 
 Build and flash from the PlatformIO project in `board/` (bootloader, partition table, and app):
@@ -58,4 +64,4 @@ Source is `board/src/main.cpp`. Do not flash a lone application `.bin` to offset
 
 ## Hardware
 
-The firmware uses GPIO 4 to control the solenoid. Use an appropriate driver circuit and external power supply; do not connect a solenoid directly to an ESP32 GPIO pin.
+![ESP32-C3 solenoid wiring diagram](imgs/diagram.png)
